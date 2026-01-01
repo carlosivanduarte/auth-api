@@ -48,7 +48,7 @@ def create_token():
                     algorithm='HS256',
                 )
 
-                return jsonify(token=token.decode('utf-8'))
+                return jsonify(token=token)
             else:
                 return jsonify(error='Invalid password'), 401
     else:
