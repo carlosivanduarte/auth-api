@@ -60,6 +60,37 @@ def health():
     return jsonify(healthy=True)
 
 
+@app.route('/token', methods=['GET'])
+def check_token():
+    """
+    Validates a JWT token and returns only validation status.
+    Token should be provided in the Authorization header as 'Bearer <token>'.
+    Returns minimal information to prevent information disclosure attacks.
+    """
+    # Get token from Authorization header
+    auth_header = request.headers.get('Authorization')
+    
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return '', 401
+    
+    token = auth_header.split(' ')[1]
+    
+    try:
+        # Decode and validate the token
+        payload = jwt.decode(
+            token,
+            current_app.config['JWT_SECRET'],
+            algorithms=['HS256']
+        )
+        
+        # HTTP 200 indicates token is valid
+        return '', 200
+        
+    except jwt.ExpiredSignatureError:
+        return '', 401
+    except jwt.InvalidTokenError:
+        return '', 401
+
 if __name__ == '__main__':
     # Env
     http_port: int = int(os.getenv('HTTP_PORT', 5000))
