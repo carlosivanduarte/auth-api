@@ -73,7 +73,10 @@ def check_token():
     if not auth_header or not auth_header.startswith('Bearer '):
         return '', 401
     
-    token = auth_header.split(' ')[1]
+    try:
+        token = auth_header.split(' ', 1)[1]  # split only once
+    except IndexError:
+        return '', 401
     
     try:
         # Decode and validate the token
